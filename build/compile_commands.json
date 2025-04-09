@@ -1,0 +1,22 @@
+[
+{
+  "directory": "/home/arseniy/myworld/firmware/headlight-corrector/build",
+  "command": "/usr/bin/arm-none-eabi-g++  -I/home/arseniy/myworld/firmware/headlight-corrector/board -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/CMSIS/Device/ST/STM32F0xx/Include -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/CMSIS/Core/Include -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Inc -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Inc/Legacy -DSTM32F070xB -DUSE_FULL_LL_DRIVER -mthumb -mcpu=cortex-m0 -fno-builtin -Wall -std=c++17  -fdata-sections -ffunction-sections -o CMakeFiles/headlight_corrector.dir/src/main.cpp.obj -c /home/arseniy/myworld/firmware/headlight-corrector/src/main.cpp",
+  "file": "/home/arseniy/myworld/firmware/headlight-corrector/src/main.cpp"
+},
+{
+  "directory": "/home/arseniy/myworld/firmware/headlight-corrector/build",
+  "command": "/usr/bin/arm-none-eabi-as  -I/home/arseniy/myworld/firmware/headlight-corrector/board -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/CMSIS/Device/ST/STM32F0xx/Include -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/CMSIS/Core/Include -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Inc -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Inc/Legacy -mthumb -mcpu=cortex-m0 -o CMakeFiles/headlight_corrector.dir/board/startup.s.obj -c /home/arseniy/myworld/firmware/headlight-corrector/board/startup.s",
+  "file": "/home/arseniy/myworld/firmware/headlight-corrector/board/startup.s"
+},
+{
+  "directory": "/home/arseniy/myworld/firmware/headlight-corrector/build",
+  "command": "/usr/bin/arm-none-eabi-gcc  -I/home/arseniy/myworld/firmware/headlight-corrector/board -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/CMSIS/Device/ST/STM32F0xx/Include -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/CMSIS/Core/Include -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Inc -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Inc/Legacy -DSTM32F070xB -DUSE_FULL_LL_DRIVER -mthumb -mcpu=cortex-m0 -fno-builtin -Wall -std=gnu99 -fdata-sections -ffunction-sections -o CMakeFiles/headlight_corrector.dir/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_usart.c.obj -c /home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_usart.c",
+  "file": "/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_usart.c"
+},
+{
+  "directory": "/home/arseniy/myworld/firmware/headlight-corrector/build",
+  "command": "/usr/bin/arm-none-eabi-gcc  -I/home/arseniy/myworld/firmware/headlight-corrector/board -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/CMSIS/Device/ST/STM32F0xx/Include -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/CMSIS/Core/Include -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Inc -I/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Inc/Legacy -DSTM32F070xB -DUSE_FULL_LL_DRIVER -mthumb -mcpu=cortex-m0 -fno-builtin -Wall -std=gnu99 -fdata-sections -ffunction-sections -o CMakeFiles/headlight_corrector.dir/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_rcc.c.obj -c /home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_rcc.c",
+  "file": "/home/arseniy/myworld/firmware/headlight-corrector/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_rcc.c"
+}
+]

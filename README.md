@@ -1,0 +1,1 @@
+-DCMAKE_TOOLCHAIN_FILE=../board/board.cmake ..
