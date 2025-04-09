@@ -31,4 +31,4 @@ SET(CMAKE_C_FLAGS_RELEASE "-Os" CACHE INTERNAL "c release compiler flags")
 SET(CMAKE_CXX_FLAGS_RELEASE "-Os" CACHE INTERNAL "cxx release compiler flags")
 SET(CMAKE_ASM_FLAGS_RELEASE "" CACHE INTERNAL "asm release compiler flags")
 
-SET(CMAKE_EXE_LINKER_FLAGS "-nostartfiles -T ${CMAKE_SOURCE_DIR}/board/linker.ld --specs=nosys.specs --specs=nano.specs -Wl,--gc-sections -mthumb -mcpu=${CPU_TYPE}" CACHE INTERNAL "exe link flags")
+SET(CMAKE_EXE_LINKER_FLAGS "-nostartfiles -T ${CMAKE_SOURCE_DIR}/board/ld/stm32f0.ld --specs=nosys.specs --specs=nano.specs -Wl,--gc-sections -mthumb -mcpu=${CPU_TYPE}" CACHE INTERNAL "exe link flags")

@@ -12,8 +12,5 @@ void _init(void){
 
 }
 
-int main() {
- //   GPIO_TypeDef 
-  //  LL_GPIO_Init(GPIO_TypeDef *GPIOx, LL_GPIO_InitTypeDef *GPIO_InitStruct);
-    return 0;
+void main_app() {
 }

@@ -1,3 +1,0 @@
-/home/arseniy/myworld/firmware/headlight-corrector/build/CMakeFiles/headlight_corrector.dir
-/home/arseniy/myworld/firmware/headlight-corrector/build/CMakeFiles/edit_cache.dir
-/home/arseniy/myworld/firmware/headlight-corrector/build/CMakeFiles/rebuild_cache.dir
