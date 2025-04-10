@@ -1,20 +1,19 @@
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 
-IF(NOT TARGET_TRIPLET)
-    SET(TARGET_TRIPLET "arm-none-eabi")
-    MESSAGE(STATUS "No TARGET_TRIPLET specified, using default: " ${TARGET_TRIPLET})
-ENDIF()
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
-SET(CMAKE_SYSTEM_NAME Generic CACHE INTERNAL "system name")
-SET(CMAKE_SYSTEM_PROCESSOR arm CACHE INTERNAL "processor")
 
-SET(CMAKE_C_COMPILER ${TARGET_TRIPLET}-gcc CACHE INTERNAL "c compiler")
-SET(CMAKE_CXX_COMPILER ${TARGET_TRIPLET}-g++ CACHE INTERNAL "cxx compiler")
-SET(CMAKE_ASM_COMPILER ${TARGET_TRIPLET}-as CACHE INTERNAL "asm compiler")
+if(NOT DEFINED TOOLCHAIN_PREFIX)
+    set(TOOLCHAIN_PREFIX "arm-none-eabi")
+    message(STATUS "TOOLCHAIN_PREFIX not specified, using: " ${TOOLCHAIN_PREFIX})
+endif()
 
-SET(CMAKE_OBJCOPY ${TARGET_TRIPLET}-objcopy CACHE INTERNAL "objcopy")
-SET(CMAKE_OBJDUMP ${TARGET_TRIPLET}-objdump CACHE INTERNAL "objdump")
+find_program(CMAKE_C_COMPILER NAMES ${TOOLCHAIN_PREFIX}-gcc HINTS ${TOOLCHAIN_BIN_PATH})
+find_program(CMAKE_CXX_COMPILER NAMES ${TOOLCHAIN_PREFIX}-g++ HINTS ${TOOLCHAIN_BIN_PATH})
+find_program(CMAKE_ASM_COMPILER NAMES ${TOOLCHAIN_PREFIX}-gcc HINTS ${TOOLCHAIN_BIN_PATH})
+find_program(CMAKE_OBJCOPY NAMES ${TOOLCHAIN_PREFIX}-objcopy HINTS ${TOOLCHAIN_BIN_PATH})
+find_program(CMAKE_OBJDUMP NAMES ${TOOLCHAIN_PREFIX}-objdump HINTS ${TOOLCHAIN_BIN_PATH})
 
 # Select cpu type.
 SET(CPU_TYPE cortex-m0)
@@ -31,4 +30,6 @@ SET(CMAKE_C_FLAGS_RELEASE "-Os" CACHE INTERNAL "c release compiler flags")
 SET(CMAKE_CXX_FLAGS_RELEASE "-Os" CACHE INTERNAL "cxx release compiler flags")
 SET(CMAKE_ASM_FLAGS_RELEASE "" CACHE INTERNAL "asm release compiler flags")
 
-SET(CMAKE_EXE_LINKER_FLAGS "-nostartfiles -T ${CMAKE_SOURCE_DIR}/board/ld/stm32f0.ld --specs=nosys.specs --specs=nano.specs -Wl,--gc-sections -mthumb -mcpu=${CPU_TYPE}" CACHE INTERNAL "exe link flags")
+SET(CMAKE_EXE_LINKER_FLAGS "-nostartfiles -Tstm32f0.ld -L${CMAKE_SOURCE_DIR}/board/ld/ --specs=nosys.specs --specs=nano.specs -Wl,--gc-sections -mthumb -mcpu=${CPU_TYPE}"  CACHE INTERNAL "exe link flags")
+
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)

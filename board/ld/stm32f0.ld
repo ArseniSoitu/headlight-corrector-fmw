@@ -3,5 +3,5 @@ MEMORY {
     SRAM(rwx) : ORIGIN = 0x20000000, LENGTH = 6K
 }
 
-INCLUDE "ld/_flash.ld"
-INCLUDE "ld/_sram.ld"
+INCLUDE "_flash.ld"
+INCLUDE "_sram.ld"

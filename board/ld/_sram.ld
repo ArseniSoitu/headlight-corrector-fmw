@@ -23,4 +23,5 @@ SECTIONS {
 
     . = ALIGN(4);
     __heap_start = .;
+    end = __heap_start;
 }

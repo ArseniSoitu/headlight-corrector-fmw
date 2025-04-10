@@ -13,6 +13,19 @@ SECTIONS {
         . = ALIGN(4);
     } >FLASH
 
+    .ARM.extab :
+    {
+        *(.ARM.extab*)
+        *(.gnu.linkonce.armextab.*)
+    } >FLASH
+
+    .ARM.exidx :
+    {
+        __exidx_start = .;
+        *(.ARM.exidx*)
+        __exidx_end = .;
+    } >FLASH
+
     .preinit_array ALIGN(4): {
         __preinit_array_start = .;
         KEEP(*(.preinit_array))
