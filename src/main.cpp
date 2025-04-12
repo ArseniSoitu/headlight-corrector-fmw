@@ -1,9 +1,12 @@
-#include <cmath>
-#include <chrono>
-#include "stm32f070xb.h"
-#include "stm32f0xx_ll_usart.h"
-#include "stm32f0xx_ll_gpio.h"
-
+#include <cstdio>
+#include "board.hpp"
+#include "sysclock/sysclock.hpp"
 
 void main_app() {
+    auto board = board::Board{};
+    board.Init();
+
+    sysclock::SysClock::Reset();
+
+    printf("Hello headlight corrector!\n");
 }

@@ -5,6 +5,12 @@ typedef void (*ptr_func_t)();
 // main application
 extern void main_app();
 
+// low-level system init
+extern void system_init();
+
+// configure clock
+extern void clock_config();
+
 // location of these variables is defined in linker script
 extern unsigned __data_start;
 extern unsigned __data_end;
@@ -87,6 +93,10 @@ void RESET_handler() {
     zero_bss();
     fill_heap();
     call_init_array();
+    // run low level init
+    system_init();
+    // configure clock
+    clock_config();
     // run application
     main_app();
     // call destructors for static instances
