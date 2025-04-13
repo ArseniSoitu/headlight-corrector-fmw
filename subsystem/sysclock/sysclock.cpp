@@ -2,4 +2,4 @@
 
 using namespace sysclock;
 
-uint64_t SysClock::ticks;
+uint64_t SysClock::ticks{0};

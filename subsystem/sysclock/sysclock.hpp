@@ -6,7 +6,7 @@ namespace sysclock
 class SysClock
 {
 public:
-    using rep        = std::int64_t;
+    using rep        = std::uint64_t;
     using period     = std::milli;
     using duration   = std::chrono::duration<rep, period>;
     using time_point = std::chrono::time_point<SysClock>;

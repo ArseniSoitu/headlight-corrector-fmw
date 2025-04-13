@@ -2,6 +2,7 @@
 #include "stm32f0xx_ll_system.h"
 #include "stm32f0xx_ll_rcc.h"
 #include "stm32f0xx_ll_utils.h"
+#include "stm32f0xx_ll_cortex.h"
 
 /** @addtogroup STM32F0xx_System_Private_Variables
   * @{
@@ -251,4 +252,5 @@ void clock_config()
 
     NVIC_SetPriority(SysTick_IRQn, 0);
     __NVIC_EnableIRQ(SysTick_IRQn);
+    LL_SYSTICK_EnableIT();
 }

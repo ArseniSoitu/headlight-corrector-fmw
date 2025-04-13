@@ -11,11 +11,13 @@ using namespace board;
 
 Board::Board()
 {
-    Clock::RegisterCallback(sysclock::SysClock::IncValue);
 }
 
 void Board::Init()
 {
+    // Register Systick callback for sys clock.
+    Clock::RegisterCallback(sysclock::SysClock::IncValue);
+
     LL_USART_InitTypeDef USART_InitStruct;
     LL_GPIO_InitTypeDef GPIO_InitStruct;
 
