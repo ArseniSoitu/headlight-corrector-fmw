@@ -24,6 +24,31 @@ void Board::Init()
     pwmInit();
 };
 
+void Board::MotorEnable()
+{
+    LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_5);
+}
+
+void Board::MotorDisable()
+{
+    LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);
+}
+
+void Board::MotorCW()
+{
+    LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_7);
+}
+
+void Board::MotorCCW()
+{
+    LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_7);
+}
+
+void Board::MotorSteps(std::size_t steps)
+{
+
+}
+
 void Board::serialInit()
 {
     LL_USART_InitTypeDef USART_InitStruct;
@@ -121,4 +146,36 @@ void Board::pwmInit()
 //     printf("timInitStruct.Prescaler: %u\r\n", timInitStruct.Prescaler);
 //     printf("ARR: %u\r\n", timInitStruct.Autoreload);
 //     printf("CCR: %u\r\n", timOCInitStruct.CompareValue);
+}
+
+void Board::motorDirPinInit()
+{
+    LL_GPIO_InitTypeDef GPIO_InitStruct;
+
+    // Enable GPIOA clock.
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
+
+    GPIO_InitStruct.Pin = LL_GPIO_PIN_7;
+    GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+    GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+    LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_7);
+}
+
+void Board::motorEnPinInit()
+{
+    LL_GPIO_InitTypeDef GPIO_InitStruct;
+
+    // Enable GPIOA clock.
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
+
+    GPIO_InitStruct.Pin = LL_GPIO_PIN_5;
+    GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+    GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+    LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);
 }

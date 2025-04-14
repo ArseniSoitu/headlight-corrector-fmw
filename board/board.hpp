@@ -1,6 +1,8 @@
 #ifndef BOARD_BOARD_HPP
 #define BOARD_BOARD_HPP
 
+#include <cinttypes>
+
 namespace board
 {
 
@@ -12,9 +14,17 @@ public:
 
     void Init();
 
+    void MotorEnable();
+    void MotorDisable();
+    void MotorCW();
+    void MotorCCW();
+    void MotorSteps(std::size_t steps);
+
 private:
     void serialInit();
     void pwmInit();
+    void motorDirPinInit();
+    void motorEnPinInit();
 };
 
 };
