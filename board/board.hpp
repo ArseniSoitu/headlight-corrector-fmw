@@ -11,6 +11,10 @@ public:
     Board(Board&) = delete;
 
     void Init();
+
+private:
+    void serialInit();
+    void pwmInit();
 };
 
 };
