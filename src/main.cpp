@@ -2,6 +2,9 @@
 #include <chrono>
 #include "board.hpp"
 #include "sysclock/sysclock.hpp"
+#include "stm32f0xx_ll_dma.h"
+#include "stm32f0xx_ll_tim.h"
+#include "stm32f0xx_ll_system.h"
 
 using namespace std::chrono_literals;
 

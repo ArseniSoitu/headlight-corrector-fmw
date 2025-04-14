@@ -2,6 +2,7 @@
 #define BOARD_BOARD_HPP
 
 #include <cinttypes>
+#include <array>
 
 namespace board
 {
@@ -25,6 +26,7 @@ private:
     void pwmInit();
     void motorDirPinInit();
     void motorEnPinInit();
+    void dmaInit();
 };
 
 };

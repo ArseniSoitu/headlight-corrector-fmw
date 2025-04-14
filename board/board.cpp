@@ -7,6 +7,7 @@
 #include "stm32f0xx_ll_rcc.h"
 #include "stm32f0xx_ll_bus.h"
 #include "stm32f0xx_ll_tim.h"
+#include "stm32f0xx_ll_dma.h"
 #include <cstdio>
 
 using namespace board;
@@ -21,6 +22,8 @@ void Board::Init()
     Clock::RegisterCallback(sysclock::SysClock::IncValue);
 
     serialInit();
+
+    dmaInit();
     pwmInit();
 };
 
@@ -113,22 +116,29 @@ void Board::pwmInit()
 
     LL_RCC_ClocksTypeDef clocks;
     LL_RCC_GetSystemClocksFreq(&clocks);
-    uint32_t periodUs = 100; // 10kHz
+    uint32_t periodUs = 50000; // 20Hz
 
     timInitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
-    timInitStruct.Prescaler = 0; // 48MHz
+    timInitStruct.Prescaler = 47; // 1MHz
     timInitStruct.Autoreload = clocks.PCLK1_Frequency /
         static_cast<uint32_t>(timInitStruct.Prescaler + 1) /
         static_cast<uint32_t>(1e6) * periodUs;
 
-    timInitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
-    LL_TIM_Init(TIM3, &timInitStruct);
+    timInitStruct.CounterMode = LL_TIM_COUNTERMODE_DOWN;
     LL_TIM_EnableARRPreload(TIM3);
+    LL_TIM_Init(TIM3, &timInitStruct);
 
-    timOCInitStruct.CompareValue = timInitStruct.Autoreload / 2;
+    timOCInitStruct.CompareValue = timInitStruct.Autoreload / (timInitStruct.Autoreload / 100); // 100 us
     timOCInitStruct.OCMode = LL_TIM_OCMODE_PWM1;
-    LL_TIM_OC_Init(TIM3, LL_TIM_CHANNEL_CH1, &timOCInitStruct);
+    timOCInitStruct.OCPolarity = LL_TIM_OCPOLARITY_HIGH;
     LL_TIM_OC_EnablePreload(TIM3, LL_TIM_CHANNEL_CH1);
+    LL_TIM_OC_Init(TIM3, LL_TIM_CHANNEL_CH1, &timOCInitStruct);
+
+    // Prepare CCR1 for dma transfer.
+    LL_TIM_SetUpdateSource(TIM3, LL_TIM_UPDATESOURCE_COUNTER);
+    LL_TIM_EnableIT_UPDATE(TIM3);
+    LL_TIM_EnableDMAReq_UPDATE(TIM3);
+//     LL_TIM_ConfigDMABurst(TIM3, LL_TIM_DMABURST_BASEADDR_CCR1, LL_TIM_DMABURST_LENGTH_1TRANSFER);
 
     // Enable configured timer channel.
     LL_TIM_CC_EnableChannel(TIM3, LL_TIM_CHANNEL_CH1);
@@ -139,13 +149,10 @@ void Board::pwmInit()
     // Enable configured timer counter.
     LL_TIM_EnableCounter(TIM3);
 
-    // Initialize shadow registers by setting UG bit.
-    LL_TIM_GenerateEvent_UPDATE(TIM3);
-
-//     printf("PCLK1_Frequency: %u\r\n", clocks.PCLK1_Frequency);
-//     printf("timInitStruct.Prescaler: %u\r\n", timInitStruct.Prescaler);
-//     printf("ARR: %u\r\n", timInitStruct.Autoreload);
-//     printf("CCR: %u\r\n", timOCInitStruct.CompareValue);
+    printf("PCLK1_Frequency: %u\r\n", clocks.PCLK1_Frequency);
+    printf("timInitStruct.Prescaler: %u\r\n", timInitStruct.Prescaler);
+    printf("ARR: %u\r\n", READ_REG(TIM3->ARR));
+    printf("CCR: %u\r\n", READ_REG(TIM3->CCR1));
 }
 
 void Board::motorDirPinInit()
@@ -178,4 +185,27 @@ void Board::motorEnPinInit()
     LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);
+}
+
+void Board::dmaInit()
+{
+//     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
+//
+//     LL_DMA_InitTypeDef DMA_InitStruct;
+//     LL_DMA_StructInit(&DMA_InitStruct);
+//
+//     DMA_InitStruct.Direction = LL_DMA_DIRECTION_MEMORY_TO_PERIPH;
+//     DMA_InitStruct.MemoryOrM2MDstAddress = (uint32_t)&arr[0];
+//     DMA_InitStruct.PeriphOrM2MSrcAddress = (uint32_t)(&(TIM3->CCR1));
+//     DMA_InitStruct.MemoryOrM2MDstDataSize = LL_DMA_MDATAALIGN_WORD;
+//     DMA_InitStruct.PeriphOrM2MSrcDataSize = LL_DMA_PDATAALIGN_HALFWORD;
+//     DMA_InitStruct.NbData = sizeof(arr) / sizeof(arr[0]);
+//     DMA_InitStruct.Mode = LL_DMA_MODE_NORMAL;
+//     DMA_InitStruct.Priority = LL_DMA_PRIORITY_HIGH;
+//     DMA_InitStruct.MemoryOrM2MDstIncMode = LL_DMA_MEMORY_INCREMENT;
+//     DMA_InitStruct.PeriphOrM2MSrcIncMode = LL_DMA_PERIPH_NOINCREMENT;
+//
+//     LL_DMA_Init(DMA1, LL_DMA_CHANNEL_3, &DMA_InitStruct);
+//
+//     LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_3);
 }

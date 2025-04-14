@@ -17,9 +17,10 @@ find_program(CMAKE_OBJDUMP NAMES ${TOOLCHAIN_PREFIX}-objdump HINTS ${TOOLCHAIN_B
 
 # Select cpu type.
 SET(CPU_TYPE cortex-m0)
+SET(MCU_FAMILY STM32F072xB)
 
-SET(CMAKE_C_FLAGS "-DSTM32F070xB -DUSE_FULL_LL_DRIVER -mthumb -mcpu=${CPU_TYPE} -fno-builtin -Wall -std=gnu99 -fdata-sections -ffunction-sections" CACHE INTERNAL "c compiler flags")
-SET(CMAKE_CXX_FLAGS "-DSTM32F070xB -DUSE_FULL_LL_DRIVER -mthumb -mcpu=${CPU_TYPE} -fno-builtin -Wall -std=c++17  -fdata-sections -ffunction-sections" CACHE INTERNAL "cxx compiler flags")
+SET(CMAKE_C_FLAGS "-D${MCU_FAMILY} -DUSE_FULL_LL_DRIVER -mthumb -mcpu=${CPU_TYPE} -fno-builtin -Wall -std=gnu99 -fdata-sections -ffunction-sections" CACHE INTERNAL "c compiler flags")
+SET(CMAKE_CXX_FLAGS "-D${MCU_FAMILY} -DUSE_FULL_LL_DRIVER -mthumb -mcpu=${CPU_TYPE} -fno-builtin -Wall -std=c++17  -fdata-sections -ffunction-sections" CACHE INTERNAL "cxx compiler flags")
 SET(CMAKE_ASM_FLAGS "-mthumb -mcpu=${CPU_TYPE}" CACHE INTERNAL "asm compiler flags")
 
 SET(CMAKE_C_FLAGS_DEBUG "-O0 -g -gstabs+" CACHE INTERNAL "c debug compiler flags")

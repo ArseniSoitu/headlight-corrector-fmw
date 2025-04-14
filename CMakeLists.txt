@@ -23,6 +23,7 @@ add_executable(${PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_rcc.c
     ${CMAKE_SOURCE_DIR}/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_utils.c
     ${CMAKE_SOURCE_DIR}/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_tim.c
+    ${CMAKE_SOURCE_DIR}/platform/st/stm32/f0/STM32CubeF0/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_dma.c
     ${CMAKE_SOURCE_DIR}/platform/st/stm32/f0/clock/clock.cpp
     ${CMAKE_SOURCE_DIR}/subsystem/sysclock/sysclock.cpp
 )

@@ -251,6 +251,6 @@ void clock_config()
     LL_SetSystemCoreClock(48000000);
 
     NVIC_SetPriority(SysTick_IRQn, 0);
-    __NVIC_EnableIRQ(SysTick_IRQn);
+    NVIC_EnableIRQ(SysTick_IRQn);
     LL_SYSTICK_EnableIT();
 }
