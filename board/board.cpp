@@ -25,6 +25,7 @@ void Board::Init()
 
     dmaInit();
     pwmInit();
+    opInit();
 };
 
 void Board::MotorEnable()
@@ -153,6 +154,66 @@ void Board::pwmInit()
     printf("timInitStruct.Prescaler: %u\r\n", timInitStruct.Prescaler);
     printf("ARR: %u\r\n", READ_REG(TIM3->ARR));
     printf("CCR: %u\r\n", READ_REG(TIM3->CCR1));
+}
+
+void Board::opInit()
+{
+    LL_GPIO_InitTypeDef GPIO_InitStruct;
+    LL_TIM_InitTypeDef timInitStruct;
+    LL_TIM_OC_InitTypeDef timOCInitStruct;
+
+    // Enable TIM1 clock.
+    LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_TIM1);
+
+    // Enable GPIOA clock.
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
+
+
+    GPIO_InitStruct.Pin = LL_GPIO_PIN_8;
+    GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+    GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+    LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    LL_GPIO_SetAFPin_8_15(GPIOA, LL_GPIO_PIN_8, LL_GPIO_AF_2);
+
+    // Default parameters for timer configuration.
+    LL_TIM_StructInit(&timInitStruct);
+
+    // Default parameters for timer channel configuration.
+    LL_TIM_OC_StructInit(&timOCInitStruct);
+
+    LL_RCC_ClocksTypeDef clocks;
+    LL_RCC_GetSystemClocksFreq(&clocks);
+    uint32_t periodUs = 500; // 20Hz
+
+    timInitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
+    timInitStruct.Prescaler = 47; // 1MHz
+    timInitStruct.Autoreload = clocks.PCLK1_Frequency /
+        static_cast<uint32_t>(timInitStruct.Prescaler + 1) /
+        static_cast<uint32_t>(1e6) * periodUs;
+
+    timInitStruct.CounterMode = LL_TIM_COUNTERMODE_DOWN;
+    timInitStruct.RepetitionCounter = 7; // 8 pulses (7 + 1)
+    LL_TIM_Init(TIM1, &timInitStruct);
+
+    LL_TIM_SetClockSource(TIM1, LL_TIM_CLOCKSOURCE_INTERNAL);
+    LL_TIM_SetOnePulseMode(TIM1, LL_TIM_ONEPULSEMODE_SINGLE);
+
+    timOCInitStruct.CompareValue = timInitStruct.Autoreload / (timInitStruct.Autoreload / 100); // 100 us
+    timOCInitStruct.OCMode = LL_TIM_OCMODE_PWM2;
+    timOCInitStruct.OCPolarity = LL_TIM_OCPOLARITY_LOW;
+    timOCInitStruct.OCIdleState = LL_TIM_OCIDLESTATE_LOW;
+    LL_TIM_OC_Init(TIM1, LL_TIM_CHANNEL_CH1, &timOCInitStruct);
+
+    // Enable configured timer channel.
+    LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH1);
+
+    // Enable outputs.
+    LL_TIM_EnableAllOutputs(TIM1);
+
+    // Enable configured timer counter.
+    LL_TIM_EnableCounter(TIM1);
 }
 
 void Board::motorDirPinInit()

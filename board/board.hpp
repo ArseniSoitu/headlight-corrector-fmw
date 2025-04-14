@@ -24,6 +24,7 @@ public:
 private:
     void serialInit();
     void pwmInit();
+    void opInit();
     void motorDirPinInit();
     void motorEnPinInit();
     void dmaInit();

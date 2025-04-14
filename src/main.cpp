@@ -26,6 +26,8 @@ void main_app() {
         if ((tmstmp - t) > delta) {
             t  = sysclock::SysClock::now();
             printf("%u second(s) last\r\n", ++i);
+
+            LL_TIM_EnableCounter(TIM1);
         }
     }
 }
