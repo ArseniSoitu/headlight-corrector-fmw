@@ -8,9 +8,12 @@
 #include "stm32f0xx_ll_bus.h"
 #include "stm32f0xx_ll_tim.h"
 #include "stm32f0xx_ll_dma.h"
+#include "stm32f0xx_ll_adc.h"
 #include <cstdio>
 
 using namespace board;
+
+std::array<uint16_t, 200> Board::adcData;
 
 Board::Board()
 {
@@ -21,11 +24,14 @@ void Board::Init()
     // Register Systick callback for sys clock.
     Clock::RegisterCallback(sysclock::SysClock::IncValue);
 
+    adcData.fill(0);
+
     serialInit();
 
-    dmaInit();
-    pwmInit();
-    opInit();
+    //pwmInit();
+
+    dmaADCInit(adcData.data(), adcData.size());
+    ADCInit();
 };
 
 void Board::MotorEnable()
@@ -136,6 +142,8 @@ void Board::pwmInit()
     LL_TIM_OC_Init(TIM3, LL_TIM_CHANNEL_CH1, &timOCInitStruct);
 
     // Prepare CCR1 for dma transfer.
+    dmaPwmLoadValue = timOCInitStruct.CompareValue;
+    dmaPWMInit(&dmaPwmLoadValue);
     LL_TIM_SetUpdateSource(TIM3, LL_TIM_UPDATESOURCE_COUNTER);
     LL_TIM_EnableIT_UPDATE(TIM3);
     LL_TIM_EnableDMAReq_UPDATE(TIM3);
@@ -248,25 +256,125 @@ void Board::motorEnPinInit()
     LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);
 }
 
-void Board::dmaInit()
+void Board::dmaPWMInit(uint16_t* data)
 {
-//     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
-//
-//     LL_DMA_InitTypeDef DMA_InitStruct;
-//     LL_DMA_StructInit(&DMA_InitStruct);
-//
-//     DMA_InitStruct.Direction = LL_DMA_DIRECTION_MEMORY_TO_PERIPH;
-//     DMA_InitStruct.MemoryOrM2MDstAddress = (uint32_t)&arr[0];
-//     DMA_InitStruct.PeriphOrM2MSrcAddress = (uint32_t)(&(TIM3->CCR1));
-//     DMA_InitStruct.MemoryOrM2MDstDataSize = LL_DMA_MDATAALIGN_WORD;
-//     DMA_InitStruct.PeriphOrM2MSrcDataSize = LL_DMA_PDATAALIGN_HALFWORD;
-//     DMA_InitStruct.NbData = sizeof(arr) / sizeof(arr[0]);
-//     DMA_InitStruct.Mode = LL_DMA_MODE_NORMAL;
-//     DMA_InitStruct.Priority = LL_DMA_PRIORITY_HIGH;
-//     DMA_InitStruct.MemoryOrM2MDstIncMode = LL_DMA_MEMORY_INCREMENT;
-//     DMA_InitStruct.PeriphOrM2MSrcIncMode = LL_DMA_PERIPH_NOINCREMENT;
-//
-//     LL_DMA_Init(DMA1, LL_DMA_CHANNEL_3, &DMA_InitStruct);
-//
-//     LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_3);
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
+
+    LL_DMA_InitTypeDef DMA_InitStruct;
+    LL_DMA_StructInit(&DMA_InitStruct);
+
+    DMA_InitStruct.Direction = LL_DMA_DIRECTION_MEMORY_TO_PERIPH;
+    DMA_InitStruct.MemoryOrM2MDstAddress = (uint32_t)&data;
+    DMA_InitStruct.PeriphOrM2MSrcAddress = (uint32_t)(&(TIM3->CCR1));
+    DMA_InitStruct.MemoryOrM2MDstDataSize = LL_DMA_MDATAALIGN_HALFWORD;
+    DMA_InitStruct.PeriphOrM2MSrcDataSize = LL_DMA_PDATAALIGN_HALFWORD;
+    DMA_InitStruct.NbData = 0xFFFF;
+    DMA_InitStruct.Mode = LL_DMA_MODE_NORMAL;
+    DMA_InitStruct.Priority = LL_DMA_PRIORITY_HIGH;
+    DMA_InitStruct.MemoryOrM2MDstIncMode = LL_DMA_MEMORY_NOINCREMENT;
+    DMA_InitStruct.PeriphOrM2MSrcIncMode = LL_DMA_PERIPH_NOINCREMENT;
+
+    LL_DMA_Init(DMA1, LL_DMA_CHANNEL_3, &DMA_InitStruct);
+
+    LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_3);
+}
+
+void Board::ADCInit()
+{
+    LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_ADC1);
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
+
+    LL_ADC_InitTypeDef adcInitStruct;
+    LL_ADC_REG_InitTypeDef adcREGInitStruct;
+    LL_GPIO_InitTypeDef GPIO_InitStruct;
+
+    GPIO_InitStruct.Pin = LL_GPIO_PIN_1;
+    GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
+    LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    LL_ADC_StructInit(&adcInitStruct);
+    LL_ADC_REG_StructInit(&adcREGInitStruct);
+
+    adcInitStruct.Clock = LL_ADC_CLOCK_SYNC_PCLK_DIV4;
+    adcInitStruct.DataAlignment = LL_ADC_DATA_ALIGN_RIGHT;
+    adcInitStruct.LowPowerMode = LL_ADC_LP_MODE_NONE;
+    adcInitStruct.Resolution = LL_ADC_RESOLUTION_12B;
+
+    adcREGInitStruct.ContinuousMode = LL_ADC_REG_CONV_CONTINUOUS;
+    adcREGInitStruct.DMATransfer = LL_ADC_REG_DMA_TRANSFER_UNLIMITED;
+    adcREGInitStruct.Overrun = LL_ADC_REG_OVR_DATA_OVERWRITTEN;
+    adcREGInitStruct.SequencerDiscont = LL_ADC_REG_SEQ_DISCONT_DISABLE;
+    adcREGInitStruct.TriggerSource = LL_ADC_REG_TRIG_SOFTWARE;
+
+    ADCCalibrate();
+
+    LL_ADC_ClearFlag_ADRDY(ADC1);
+
+    LL_ADC_Init(ADC1, &adcInitStruct);
+    LL_ADC_REG_Init(ADC1, &adcREGInitStruct);
+
+    LL_ADC_REG_SetSequencerChannels(ADC1, LL_ADC_CHANNEL_1);
+
+    LL_ADC_Enable(ADC1);
+}
+
+void Board::ADCStart()
+{
+    LL_ADC_REG_StartConversion(ADC1);
+//     while (!LL_DMA_IsActiveFlag_TC1(DMA1)) {
+//         __NOP();
+//     }
+}
+
+uint32_t Board::ADCFinished()
+{
+    return LL_DMA_IsActiveFlag_TC1(DMA1);
+}
+
+void Board::dmaADCInit(uint16_t* buf, size_t sz)
+{
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
+
+    LL_DMA_InitTypeDef DMA_InitStruct;
+    LL_DMA_StructInit(&DMA_InitStruct);
+
+    DMA_InitStruct.Direction = LL_DMA_DIRECTION_PERIPH_TO_MEMORY;
+    DMA_InitStruct.MemoryOrM2MDstAddress = (uint32_t)&buf[0];
+    DMA_InitStruct.PeriphOrM2MSrcAddress = (uint32_t)(&(ADC1->DR));
+    DMA_InitStruct.MemoryOrM2MDstDataSize = LL_DMA_MDATAALIGN_HALFWORD;
+    DMA_InitStruct.PeriphOrM2MSrcDataSize = LL_DMA_PDATAALIGN_HALFWORD;
+    DMA_InitStruct.NbData = sz;
+    DMA_InitStruct.Mode = LL_DMA_MODE_CIRCULAR;
+    DMA_InitStruct.Priority = LL_DMA_PRIORITY_HIGH;
+    DMA_InitStruct.MemoryOrM2MDstIncMode = LL_DMA_MEMORY_INCREMENT;
+    DMA_InitStruct.PeriphOrM2MSrcIncMode = LL_DMA_PERIPH_NOINCREMENT;
+
+    NVIC_SetPriority(DMA1_Channel1_IRQn, 0);
+    NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+
+    LL_DMA_Init(DMA1, LL_DMA_CHANNEL_1, &DMA_InitStruct);
+
+    LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_1);
+
+    LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_1);
+}
+
+void Board::ADCCalibrate()
+{
+    if (READ_BIT(ADC1->CR, ADC_CR_ADEN) != 0) {
+        SET_BIT(ADC1->CR, ADC_CR_ADDIS);
+    }
+
+    while (READ_BIT(ADC1->CR, ADC_CR_ADEN) != 0) {
+        __NOP();
+    }
+
+    CLEAR_BIT(ADC1->CFGR1, ADC_CFGR1_DMAEN);
+    SET_BIT(ADC1->CR, ADC_CR_ADCAL);
+
+    while (READ_BIT(ADC1->CR, ADC_CR_ADCAL) != 0) {
+        __NOP();
+    }
+
+    adcCalibFactor = LL_ADC_REG_ReadConversionData32(ADC1);
 }

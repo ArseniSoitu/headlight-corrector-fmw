@@ -23,6 +23,7 @@ __attribute__((weak, alias("__stop"))) void DEBUGMONITOR_handler();
 __attribute__((weak, alias("__stop"))) void PENDSV_handler();
 __attribute__((weak, alias("__stop"))) void SYSTICK_handler();
 __attribute__((weak, alias("__stop"))) void TIM3_handler();
+__attribute__((weak, alias("__stop"))) void DMA1_Channel1_handler();
 
 // Dummy handler (for unused vectors)
 __attribute__((weak, alias("__stop"))) void DUMMY_handler();
@@ -54,7 +55,7 @@ __attribute__((section(".vectors"), used)) ptr_func_t __isr_vectors[] = {
     DUMMY_handler,
     DUMMY_handler,
     DUMMY_handler,
-    DUMMY_handler,
+    DMA1_Channel1_handler,
     DUMMY_handler,
     DUMMY_handler,
     DUMMY_handler,
