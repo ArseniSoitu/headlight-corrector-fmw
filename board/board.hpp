@@ -19,7 +19,7 @@ public:
     void MotorDisable();
     void MotorCW();
     void MotorCCW();
-    void MotorSteps(std::size_t steps);
+    void MotorSteps(int steps);
     void ADCStart();
     uint32_t ADCFinished();
     void dmaADCInit(uint16_t* buf, std::size_t sz);
@@ -33,7 +33,7 @@ private:
     void opInit();
     void motorDirPinInit();
     void motorEnPinInit();
-    void dmaPWMInit(uint16_t* data);
+    void dmaPWMInit(uint16_t* data, uint16_t pulses);
     void ADCCalibrate();
 
     uint16_t dmaPwmLoadValue;

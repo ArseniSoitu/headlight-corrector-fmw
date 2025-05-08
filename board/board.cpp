@@ -28,7 +28,7 @@ void Board::Init()
 
     serialInit();
 
-    //pwmInit();
+    pwmInit();
 
     dmaADCInit(adcData.data(), adcData.size());
     ADCInit();
@@ -36,11 +36,13 @@ void Board::Init()
 
 void Board::MotorEnable()
 {
+    printf("----Motor enable-----\n");
     LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_5);
 }
 
 void Board::MotorDisable()
 {
+    printf("-----Motor disable----\n");
     LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);
 }
 
@@ -54,9 +56,25 @@ void Board::MotorCCW()
     LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_7);
 }
 
-void Board::MotorSteps(std::size_t steps)
+void Board::MotorSteps(int steps)
 {
+    if (steps == 0) {
+        return;
+    }
 
+    if (steps > 0) {
+        MotorCW();
+    } else {
+        MotorCCW();
+    }
+
+    printf("---Motor runs for %d steps----\n", steps);
+
+    MotorEnable();
+
+    uint16_t pulses = steps > 0 ? (uint16_t)steps : (uint16_t)(steps * (-1));
+    dmaPWMInit(&dmaPwmLoadValue, pulses);
+    LL_TIM_EnableCounter(TIM3);
 }
 
 void Board::serialInit()
@@ -83,7 +101,7 @@ void Board::serialInit()
     LL_GPIO_SetAFPin_8_15(GPIOA, LL_GPIO_PIN_9, LL_GPIO_AF_1);
     LL_GPIO_SetAFPin_8_15(GPIOA, LL_GPIO_PIN_10, LL_GPIO_AF_1);
 
-    USART_InitStruct.BaudRate = 9600;
+    USART_InitStruct.BaudRate = 115200;
     USART_InitStruct.DataWidth = LL_USART_DATAWIDTH_8B;
     USART_InitStruct.StopBits = LL_USART_STOPBITS_1;
     USART_InitStruct.Parity = LL_USART_PARITY_NONE;
@@ -143,7 +161,7 @@ void Board::pwmInit()
 
     // Prepare CCR1 for dma transfer.
     dmaPwmLoadValue = timOCInitStruct.CompareValue;
-    dmaPWMInit(&dmaPwmLoadValue);
+//     dmaPWMInit(&dmaPwmLoadValue);
     LL_TIM_SetUpdateSource(TIM3, LL_TIM_UPDATESOURCE_COUNTER);
     LL_TIM_EnableIT_UPDATE(TIM3);
     LL_TIM_EnableDMAReq_UPDATE(TIM3);
@@ -156,7 +174,7 @@ void Board::pwmInit()
     LL_TIM_EnableAllOutputs(TIM3);
 
     // Enable configured timer counter.
-    LL_TIM_EnableCounter(TIM3);
+//     LL_TIM_EnableCounter(TIM3);
 
     printf("PCLK1_Frequency: %u\r\n", clocks.PCLK1_Frequency);
     printf("timInitStruct.Prescaler: %u\r\n", timInitStruct.Prescaler);
@@ -256,7 +274,7 @@ void Board::motorEnPinInit()
     LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);
 }
 
-void Board::dmaPWMInit(uint16_t* data)
+void Board::dmaPWMInit(uint16_t* data, uint16_t pulses)
 {
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
 
@@ -268,11 +286,16 @@ void Board::dmaPWMInit(uint16_t* data)
     DMA_InitStruct.PeriphOrM2MSrcAddress = (uint32_t)(&(TIM3->CCR1));
     DMA_InitStruct.MemoryOrM2MDstDataSize = LL_DMA_MDATAALIGN_HALFWORD;
     DMA_InitStruct.PeriphOrM2MSrcDataSize = LL_DMA_PDATAALIGN_HALFWORD;
-    DMA_InitStruct.NbData = 0xFFFF;
+    DMA_InitStruct.NbData = pulses;
     DMA_InitStruct.Mode = LL_DMA_MODE_NORMAL;
     DMA_InitStruct.Priority = LL_DMA_PRIORITY_HIGH;
     DMA_InitStruct.MemoryOrM2MDstIncMode = LL_DMA_MEMORY_NOINCREMENT;
     DMA_InitStruct.PeriphOrM2MSrcIncMode = LL_DMA_PERIPH_NOINCREMENT;
+
+    // Transfer comlete interrupt
+    NVIC_SetPriority(DMA1_Channel2_3_IRQn, 0);
+    NVIC_EnableIRQ(DMA1_Channel2_3_IRQn);
+    LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_3);
 
     LL_DMA_Init(DMA1, LL_DMA_CHANNEL_3, &DMA_InitStruct);
 
