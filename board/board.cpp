@@ -278,6 +278,8 @@ void Board::dmaPWMInit(uint16_t* data, uint16_t pulses)
 {
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
 
+    LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_3);
+
     LL_DMA_InitTypeDef DMA_InitStruct;
     LL_DMA_StructInit(&DMA_InitStruct);
 
