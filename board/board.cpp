@@ -36,14 +36,15 @@ void Board::Init()
 
 void Board::MotorEnable()
 {
-    printf("----Motor enable-----\n");
     LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_5);
+    printf("----Motor enable-----\n");
 }
 
 void Board::MotorDisable()
 {
-    printf("-----Motor disable----\n");
+    LL_TIM_DisableCounter(TIM3);
     LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);
+    printf("-----Motor disable----\n");
 }
 
 void Board::MotorCW()

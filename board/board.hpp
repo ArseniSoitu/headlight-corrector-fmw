@@ -16,7 +16,7 @@ public:
     void Init();
 
     void MotorEnable();
-    void MotorDisable();
+    static void MotorDisable();
     void MotorCW();
     void MotorCCW();
     void MotorSteps(int steps);

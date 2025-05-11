@@ -11,7 +11,6 @@ using namespace std::chrono_literals;
 bool lock;
 std::array<uint16_t, 200> adcData;
 
-bool motor_disable;
 uint32_t motor_position = UINT32_MAX;
 
 void DMA1_Channel1_handler()
@@ -30,7 +29,7 @@ void DMA1_Channel2_3_handler()
 {
     if (LL_DMA_IsActiveFlag_TC3(DMA1)) {
         LL_DMA_ClearFlag_TC3(DMA1);
-        motor_disable = true;
+        board::Board::MotorDisable();
     }
 }
 
@@ -141,10 +140,5 @@ void main_app()
 
         deltaSteps = positionChange(convert(filter()));
         board.MotorSteps(deltaSteps);
-
-        if (motor_disable) {
-            motor_disable = false;
-            board.MotorDisable();
-        }
     }
 }
