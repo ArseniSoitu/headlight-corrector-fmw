@@ -118,7 +118,7 @@ void main_app()
 
     sysclock::SysClock::Reset();
 
-    printf("Hello headlight corrector!\r\n");
+    printf("Headlight corrector!\r\n");
 
     auto t  = sysclock::SysClock::now();
 
