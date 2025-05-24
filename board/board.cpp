@@ -145,10 +145,10 @@ void Board::pwmInit()
 
     LL_RCC_ClocksTypeDef clocks;
     LL_RCC_GetSystemClocksFreq(&clocks);
-    uint32_t periodUs = 50000; // 20Hz
+    uint32_t periodUs = 100; // 10000Hz
 
     timInitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
-    timInitStruct.Prescaler = 47; // 1MHz
+    timInitStruct.Prescaler = 0; // 48MHz
     timInitStruct.Autoreload = clocks.PCLK1_Frequency /
         static_cast<uint32_t>(timInitStruct.Prescaler + 1) /
         static_cast<uint32_t>(1e6) * periodUs;
@@ -157,7 +157,7 @@ void Board::pwmInit()
     LL_TIM_EnableARRPreload(TIM3);
     LL_TIM_Init(TIM3, &timInitStruct);
 
-    timOCInitStruct.CompareValue = timInitStruct.Autoreload / (timInitStruct.Autoreload / 100); // 100 us
+    timOCInitStruct.CompareValue = timInitStruct.Autoreload * 10 / periodUs; // 10 us
     timOCInitStruct.OCMode = LL_TIM_OCMODE_PWM1;
     timOCInitStruct.OCPolarity = LL_TIM_OCPOLARITY_HIGH;
     LL_TIM_OC_EnablePreload(TIM3, LL_TIM_CHANNEL_CH1);
