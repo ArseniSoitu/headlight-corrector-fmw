@@ -1,0 +1,22 @@
+.program square_wave
+
+    pull noblock          ; Load OSR from FIFO.
+//    mov x, osr          ; Move OSR into loop counter (x).
+//    set pindirs, 1 ; Set pin to output
+
+bitloop:                ;
+//    pull
+//    out pins, 1
+    set pins, 1 [4]
+    set pins, 0 [4]
+
+//    set pins, 1 [4]    ; Drive pin high, 32 total delay
+//    nop         [31]    ; Another 32 cycle delay
+//    set pins, 0 [4]    ; Drive pin low, 32 total delay
+//    nop         [31]    ; Final 31 cycle delay to compensate for
+                        ; the jump instruction.
+
+//    mov isr, x          ; Move the loop count for reading externally
+//    push                ; Push the ISR into the FIFO
+//    jmp x-- bitloop     ; Iterate until the loop count is zero.
+    jmp bitloop     ; Iterate until the loop count is zero.
