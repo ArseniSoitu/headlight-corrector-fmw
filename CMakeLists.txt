@@ -15,7 +15,7 @@ add_executable(${CMAKE_PROJECT_NAME}
 pico_generate_pio_header(${CMAKE_PROJECT_NAME} ${CMAKE_SOURCE_DIR}/src/pio/square_wave.pio)
 
 # Add pico_stdlib library which aggregates commonly used features
-target_link_libraries(${CMAKE_PROJECT_NAME} pico_stdlib hardware_pio)
+target_link_libraries(${CMAKE_PROJECT_NAME} pico_stdlib hardware_pio hardware_adc)
 
 # create map/bin/hex/uf2 file in addition to ELF.
 pico_add_extra_outputs(${CMAKE_PROJECT_NAME})
